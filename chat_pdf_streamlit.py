@@ -13,6 +13,7 @@ from streamlit_chat import message as st_message
 from typing import List, Dict, Any
 from langchain.docstore.document import Document
 import re
+import itertools
 from langchain.agents.agent_toolkits import (
     create_vectorstore_agent,
     VectorStoreToolkit,
@@ -60,28 +61,39 @@ st.markdown("""
         </style>
         """, unsafe_allow_html=True)
 
-
+## it supports multiple PDFs
 files=st.file_uploader("Choose a file",accept_multiple_files=True,type=['pdf'])
 
 def generate_answer():
     """ this function will handle parsing the document , turning it into embeddings and the query"""
     user_query = st.session_state.input_text
-    documents=parse_pdf((files))
-    docs=text_to_docs(documents)
-    embeddings = OpenAIEmbeddings()
-    vectordb = Chroma.from_documents(docs, embeddings, collection_name="collection")
-    pdfqa = VectorDBQA.from_chain_type(llm=OpenAI(temperature=0), chain_type="stuff", vectorstore=vectordb)
-    answer=(pdfqa.run(user_query))
+    with st.spinner("Indexing document... This may take a while⏳"):
+        # parsing the uploaded files
+        parsed_files=[parse_pdf(f) for f in files]
+
+        # flattening the list of files         
+        merged_docs = list(itertools.chain(*parsed_files))
+        # turning the string into lang chain's Document format
+        docs=text_to_docs(merged_docs)
+        embeddings = OpenAIEmbeddings()
+        # create embeddings
+        vectordb = Chroma.from_documents(docs, embeddings, collection_name="collection")
+        pdfqa = VectorDBQA.from_chain_type(llm=OpenAI(temperature=0), chain_type="stuff", vectorstore=vectordb)
+    # generate the answer
+    answer=pdfqa.run(user_query)
+    # save the exchanged messages
     st.session_state.history.append({"message": user_query, "is_user": True})
     st.session_state.history.append({"message": answer, "is_user": False})
     
 
-if  files is not None:
+if  files != []:
     # trigger if the user uploads a file
-
     for chat in st.session_state.history:
         # unpacking the messages stored 
         st_message(**chat) 
     text_box=st.text_input("Talk to your pdf", key="input_text", on_change=generate_answer,placeholder="does this assignment require C++ knowledge ?")
-
+    
+   
+ 
+       
     
