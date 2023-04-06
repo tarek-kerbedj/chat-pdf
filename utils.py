@@ -9,6 +9,7 @@ import re
 
 @st.experimental_memo()
 def parse_pdf(file: BytesIO) -> List[str]:
+    # takes  pdf file Bytes and parses it 
     pdf = PdfReader(file)
     output = []
     for page in pdf.pages:
