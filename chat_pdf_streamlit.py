@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.text_splitter import CharacterTextSplitter
@@ -18,9 +19,10 @@ from langchain.agents.agent_toolkits import (
 from langchain import OpenAI, VectorDBQA
 from utils import parse_pdf,text_to_docs
 
-#os.environ["OPENAI_API_KEY"] = ""
-#st.write(st.secrets.keys())
-st.write(st.secrets.OPENAI_API_KEY)
+
+os.environ["OPENAI_API_KEY"]=secrets.OPENAI_API_KEY
+#API=st.secrets.OPENAI_API_KEY
+
 #os.environ["OPEN_API_Key"]=st.secrets["OPEN_API_Key"]
 st.set_page_config(page_title='ChatPDF',page_icon="http://aidevlab.com/wp-content/uploads/2023/03/cropped-AI-Derivatives_FF-04.png")
 
