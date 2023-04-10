@@ -20,7 +20,7 @@ from langchain import OpenAI, VectorDBQA
 from utils import parse_pdf,text_to_docs
 
 
-os.environ["OPENAI_API_KEY"]=secrets.OPENAI_API_KEY
+os.environ["OPENAI_API_KEY"]=st.secrets.OPENAI_API_KEY
 #API=st.secrets.OPENAI_API_KEY
 
 #os.environ["OPEN_API_Key"]=st.secrets["OPEN_API_Key"]
